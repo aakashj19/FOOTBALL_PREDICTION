@@ -1,0 +1,750 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matchday — Football Predictions</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #111411;
+            --surface: #191e19;
+            --surface-raised: #202620;
+            --line: #303830;
+            --text: #f1f0e8;
+            --muted: #9ba397;
+            --green: #b8d49a;
+            --green-dark: #31452f;
+            --amber: #d9b878;
+            --blue: #9eafd0;
+            --mono: "DM Mono", monospace;
+            --sans: "Manrope", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .site-header {
+            border-bottom: 1px solid var(--line);
+        }
+
+        .nav {
+            width: min(1180px, 90%);
+            height: 76px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .brand-mark {
+            color: var(--green);
+        }
+
+        .nav-link {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .04em;
+            transition: color .2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+        }
+
+        .page {
+            width: min(1180px, 90%);
+            margin: 58px auto 80px;
+        }
+
+        .intro {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 34px;
+        }
+
+        .eyebrow {
+            color: var(--green);
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            font-size: clamp(34px, 5vw, 56px);
+            line-height: 1.05;
+            letter-spacing: -.055em;
+            font-weight: 700;
+        }
+
+        .intro-copy {
+            max-width: 440px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.8;
+            padding-bottom: 4px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 340px minmax(0, 1fr);
+            gap: 22px;
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--line);
+        }
+
+        .panel-heading {
+            padding: 20px 22px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .04em;
+        }
+
+        .panel-index {
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 10px;
+        }
+
+        .form-body {
+            padding: 24px 22px 22px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        select {
+            width: 100%;
+            appearance: none;
+            background-color: var(--surface-raised);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ba397' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            color: var(--text);
+            border: 1px solid var(--line);
+            border-radius: 2px;
+            padding: 14px 40px 14px 14px;
+            font-family: var(--sans);
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: var(--green);
+        }
+
+        select option {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .predict-button {
+            width: 100%;
+            min-height: 48px;
+            border: 1px solid var(--green);
+            background: var(--green);
+            color: #172015;
+            font-family: var(--sans);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .04em;
+            cursor: pointer;
+            transition: background .2s ease, border-color .2s ease;
+        }
+
+        .predict-button:hover {
+            background: #c8dfae;
+            border-color: #c8dfae;
+        }
+
+        .error-message {
+            margin-top: 18px;
+            padding: 12px;
+            border-left: 2px solid #d87970;
+            background: #2b1d1c;
+            color: #efb1aa;
+            font-size: 12px;
+        }
+
+        .analysis-panel {
+            min-width: 0;
+        }
+
+        .analysis-top {
+            padding: 24px 26px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .analysis-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 24px;
+        }
+
+        .analysis-label {
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+
+        .live-tag {
+            color: var(--green);
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: .08em;
+        }
+
+        .matchup {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            align-items: center;
+            gap: 18px;
+        }
+
+        .team-name {
+            font-size: clamp(18px, 2.6vw, 28px);
+            font-weight: 800;
+            letter-spacing: -.04em;
+            line-height: 1.2;
+            overflow-wrap: anywhere;
+        }
+
+        .team-name.away {
+            text-align: right;
+        }
+
+        .versus {
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: .1em;
+        }
+
+        .probabilities {
+            padding: 26px;
+        }
+
+        .section-label {
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .probability-row {
+            margin-bottom: 24px;
+        }
+
+        .probability-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .probability-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .probability-name {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .probability-value {
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .bar-track {
+            height: 5px;
+            width: 100%;
+            background: #303830;
+        }
+
+        .bar-fill {
+            height: 100%;
+            transition: width .45s ease;
+        }
+
+        .home-bar {
+            background: var(--green);
+        }
+
+        .draw-bar {
+            background: var(--amber);
+        }
+
+        .away-bar {
+            background: var(--blue);
+        }
+
+        .history {
+            border-top: 1px solid var(--line);
+        }
+
+        .history-heading {
+            padding: 20px 26px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-heading h3 {
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .history-heading span {
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 10px;
+        }
+
+        .history-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .team-history {
+            min-width: 0;
+            padding: 22px 26px 18px;
+        }
+
+        .team-history + .team-history {
+            border-left: 1px solid var(--line);
+        }
+
+        .team-history-title {
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #293029;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-match {
+            min-width: 0;
+        }
+
+        .history-opponent {
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            overflow-wrap: anywhere;
+        }
+
+        .history-score {
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 10px;
+        }
+
+        .result-badge {
+            width: 24px;
+            height: 24px;
+            flex: 0 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .result-W {
+            background: #293b2a;
+            color: #b8d49a;
+        }
+
+        .result-D {
+            background: #3a3324;
+            color: #d9b878;
+        }
+
+        .result-L {
+            background: #3b2928;
+            color: #d9948d;
+        }
+
+        .empty-history {
+            color: var(--muted);
+            font-size: 12px;
+            padding: 10px 0;
+        }
+
+        .empty-analysis {
+            padding: 36px 26px;
+        }
+
+        .empty-analysis h2 {
+            font-size: 20px;
+            letter-spacing: -.03em;
+            margin-bottom: 10px;
+        }
+
+        .empty-analysis p {
+            max-width: 420px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 26px;
+            color: #697267;
+            font-family: var(--mono);
+            font-size: 9px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .intro {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .intro-copy {
+                max-width: 560px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .nav {
+                height: 66px;
+            }
+
+            .page {
+                margin-top: 38px;
+            }
+
+            .analysis-top,
+            .probabilities {
+                padding: 22px 18px;
+            }
+
+            .history-heading {
+                padding: 18px;
+            }
+
+            .history-columns {
+                grid-template-columns: 1fr;
+            }
+
+            .team-history {
+                padding: 20px 18px;
+            }
+
+            .team-history + .team-history {
+                border-left: none;
+                border-top: 1px solid var(--line);
+            }
+
+            .matchup {
+                gap: 10px;
+            }
+
+            .team-name {
+                font-size: 18px;
+            }
+
+            .footer {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <nav class="nav">
+            <a href="/" class="brand">Matchday<span class="brand-mark">.</span></a>
+            <a href="/teams" class="nav-link">TEAM DASHBOARD ↗</a>
+            <a href="{{ url_for('standings_dashboard') }}">League Standings</a>
+            <a href="{{ url_for('standings_dashboard') }}" class="nav-link">
+    LEAGUE STANDINGS ↗
+</a>
+        </nav>
+    </header>
+
+    <main class="page">
+        <section class="intro">
+            <div>
+                <div class="eyebrow">Football · Match analysis</div>
+                <h1>Read the game<br>before kickoff.</h1>
+            </div>
+            <p class="intro-copy">
+                A match prediction built from recent team performance.
+                Select a fixture to explore the model's estimated outcome probabilities.
+            </p>
+        </section>
+
+        <div class="content-grid">
+            <section class="panel">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Choose a fixture</h2>
+                    <span class="panel-index">01 / SELECT</span>
+                </div>
+
+                <div class="form-body">
+                    <form method="POST" action="/">
+                        <div class="form-group">
+                            <label for="home_team">Home side</label>
+                            <select name="home_team" id="home_team" required>
+                                <option value="">Select team</option>
+                                {% for team in teams %}
+                                    <option value="{{ team }}"
+                                        {% if selected_home == team %}selected{% endif %}>
+                                        {{ team }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="away_team">Away side</label>
+                            <select name="away_team" id="away_team" required>
+                                <option value="">Select team</option>
+                                {% for team in teams %}
+                                    <option value="{{ team }}"
+                                        {% if selected_away == team %}selected{% endif %}>
+                                        {{ team }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <button type="submit" class="predict-button">
+                            Analyse fixture →
+                        </button>
+                    </form>
+
+                    {% if prediction and prediction.error %}
+                        <div class="error-message">{{ prediction.error }}</div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="panel analysis-panel">
+                {% if prediction and not prediction.error %}
+                    <div class="analysis-top">
+                        <div class="analysis-meta">
+                            <span class="analysis-label">Prediction report</span>
+                            <span class="live-tag">● MODEL OUTPUT</span>
+                        </div>
+
+                        <div class="matchup">
+                            <div class="team-name">{{ prediction.home_team }}</div>
+                            <div class="versus">VS</div>
+                            <div class="team-name away">{{ prediction.away_team }}</div>
+                        </div>
+                    </div>
+
+                    <div class="probabilities">
+                        <div class="section-label">Outcome probabilities</div>
+
+                        <div class="probability-row">
+                            <div class="probability-info">
+                                <span class="probability-name">
+                                    {{ prediction.home_team }} win
+                                </span>
+                                <span class="probability-value">{{ prediction.home }}%</span>
+                            </div>
+                            <div class="bar-track">
+                                <div class="bar-fill home-bar"
+                                     style="width: {{ prediction.home }}%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="probability-row">
+                            <div class="probability-info">
+                                <span class="probability-name">Draw</span>
+                                <span class="probability-value">{{ prediction.draw }}%</span>
+                            </div>
+                            <div class="bar-track">
+                                <div class="bar-fill draw-bar"
+                                     style="width: {{ prediction.draw }}%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="probability-row">
+                            <div class="probability-info">
+                                <span class="probability-name">
+                                    {{ prediction.away_team }} win
+                                </span>
+                                <span class="probability-value">{{ prediction.away }}%</span>
+                            </div>
+                            <div class="bar-track">
+                                <div class="bar-fill away-bar"
+                                     style="width: {{ prediction.away }}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="history">
+                        <div class="history-heading">
+                            <h3>Recent form</h3>
+                            <span>LAST MATCHES</span>
+                        </div>
+
+                        <div class="history-columns">
+                            <div class="team-history">
+                                <div class="team-history-title">
+                                    {{ prediction.home_team }}
+                                </div>
+
+                                {% if home_history %}
+                                    {% for match in home_history %}
+                                        <div class="history-item">
+                                            <div class="history-match">
+                                                <div class="history-opponent">
+                                                    {% if match.is_home %}vs{% else %}@{% endif %}
+                                                    {{ match.opponent }}
+                                                </div>
+                                                <div class="history-score">
+                                                    {{ match.team_goals }} – {{ match.opponent_goals }}
+                                                </div>
+                                            </div>
+                                            <span class="result-badge result-{{ match.result }}">
+                                                {{ match.result }}
+                                            </span>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="empty-history">No recent matches available.</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="team-history">
+                                <div class="team-history-title">
+                                    {{ prediction.away_team }}
+                                </div>
+
+                                {% if away_history %}
+                                    {% for match in away_history %}
+                                        <div class="history-item">
+                                            <div class="history-match">
+                                                <div class="history-opponent">
+                                                    {% if match.is_home %}vs{% else %}@{% endif %}
+                                                    {{ match.opponent }}
+                                                </div>
+                                                <div class="history-score">
+                                                    {{ match.team_goals }} – {{ match.opponent_goals }}
+                                                </div>
+                                            </div>
+                                            <span class="result-badge result-{{ match.result }}">
+                                                {{ match.result }}
+                                            </span>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="empty-history">No recent matches available.</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="empty-analysis">
+                        <div class="eyebrow">Match report</div>
+                        <h2>Start with a fixture.</h2>
+                        <p>
+                            Choose the home and away teams to view the predicted
+                            probabilities and each side's recent results.
+                        </p>
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+
+        <footer class="footer">
+            <span>Matchday · Football prediction project</span>
+            <span>Probabilities are model estimates, not guarantees</span>
+        </footer>
+    </main>
+</body>
+</html>
